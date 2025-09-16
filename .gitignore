@@ -1,0 +1,10 @@
+# Arquivos de importação do Godot
+.godot/
+
+# Arquivos exportados
+*.pck
+*.export/
+*.export_presets
+
+# Arquivos de configuração do Mono/C# (se aplicável)
+.mono/
