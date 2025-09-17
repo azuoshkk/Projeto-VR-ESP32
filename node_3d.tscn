@@ -9,15 +9,15 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_noarx"]
 albedo_color = Color(0.4117647, 0.7529412, 0.24705882, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3fl7"]
-albedo_color = Color(1, 0.15686275, 0, 1)
-
 [sub_resource type="BoxMesh" id="BoxMesh_jka67"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i5arm"]
 albedo_color = Color(0, 0.6039216, 0.85490197, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3fl7"]
+albedo_color = Color(1, 0.15686275, 0, 1)
 
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_a202f")
@@ -31,7 +31,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.5,
 tracker = &"left_hand"
 
 [node name="XRController3D2" type="XRController3D" parent="XR_Setup/XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0.36646223)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.06351268, 0, 0.36646223)
 tracker = &"right_hand"
 
 [node name="RayCast3D" type="RayCast3D" parent="XR_Setup/XROrigin3D/XRController3D2"]
@@ -55,28 +55,28 @@ debug_color = Color(5.77569e-06, 0.58887106, 0.76170254, 0.41960785)
 mesh = SubResource("BoxMesh_a202f")
 surface_material_override/0 = SubResource("StandardMaterial3D_noarx")
 
-[node name="RedBtn" type="Area3D" parent="."]
-collision_layer = 2
-collision_mask = 2
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RedBtn"]
-shape = SubResource("BoxShape3D_a202f")
-debug_color = Color(5.77569e-06, 0.58887106, 0.76170254, 0.41960785)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RedBtn"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1541523, 0, 0)
-mesh = SubResource("BoxMesh_a0tk4")
-surface_material_override/0 = SubResource("StandardMaterial3D_r3fl7")
-
 [node name="BlueBtn" type="Area3D" parent="."]
 collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BlueBtn"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1513362, 0, 0)
 shape = SubResource("BoxShape3D_a202f")
 debug_color = Color(5.77569e-06, 0.58887106, 0.76170254, 0.41960785)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BlueBtn"]
 mesh = SubResource("BoxMesh_jka67")
 surface_material_override/0 = SubResource("StandardMaterial3D_i5arm")
+
+[node name="RedBtn" type="Area3D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RedBtn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1541523, 0, 0)
+mesh = SubResource("BoxMesh_a0tk4")
+surface_material_override/0 = SubResource("StandardMaterial3D_r3fl7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RedBtn"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1527491, 0, 0)
+shape = SubResource("BoxShape3D_a202f")
+debug_color = Color(5.77569e-06, 0.58887106, 0.76170254, 0.41960785)

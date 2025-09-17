@@ -7,14 +7,15 @@ extends Node3D
 # --- ESTADO DOS BOTÕES ---
 var botao_estados = {
 	"GreenBtn": false,
-	"RedBtn": false
+	"RedBtn": false,
+	"BlueBtn": false
 }
 
 # --- CONFIGURAÇÕES DA COMUNICAÇÃO UDP ---
 var udp_peer = PacketPeerUDP.new()
 const PORTA_ESP32 = 8888
 # IMPORTANTE: Lembre-se de alterar este IP para o do seu ESP32
-var IP_ESP32 = "192.168.0.15"
+var IP_ESP32 = "127.0.0.1"
 
 # Função chamada uma vez quando o jogo inicia
 func _ready():
@@ -58,9 +59,13 @@ func _input(_event):
 		
 		# Se o raio atingiu algo, verifica se é um dos botões
 		if not result.is_empty():
+			# A variável 'collider' aqui já é o seu botão Area3D ("GreenBtn" ou "RedBtn")
 			var collider = result.collider
-			if collider and collider.get_parent() and botao_estados.has(collider.get_parent().name):
-				var nome_do_botao = collider.get_parent().name
+			# AQUI ESTÁ A MUDANÇA: Checamos o nome do próprio collider
+			if botao_estados.has(collider.name):
+				# E usamos o nome do próprio collider
+				var nome_do_botao = collider.name 
+		
 				print("Acionado via Mouse+Q: '", nome_do_botao, "'")
 				toggle_botao(nome_do_botao)
 
@@ -81,6 +86,8 @@ func enviar_dados_para_esp32():
 		byte_para_enviar |= 1 # Liga o primeiro bit
 	if botao_estados["RedBtn"]:
 		byte_para_enviar |= 2 # Liga o segundo bit
+	if botao_estados["BlueBtn"]:
+		byte_para_enviar |= 4 # Liga o 
 	
 	# Envia o pacote via UDP
 	var pacote = PackedByteArray([byte_para_enviar])
