@@ -1,6 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://cviylja22evhq"]
+[gd_scene load_steps=10 format=3 uid="uid://cviylja22evhq"]
 
-[ext_resource type="Script" uid="uid://dldy02yx8hefq" path="res://Main.gd" id="1_a202f"]
+[ext_resource type="Script" uid="uid://bgs1gr3oq4b83" path="res://VR_Initializer.gd" id="1_a202f"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_a202f"]
+radius = 0.05
+height = 0.05
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a202f"]
 
@@ -28,16 +32,21 @@ script = ExtResource("1_a202f")
 
 [node name="XRController3D" type="XRController3D" parent="XR_Setup/XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.5, 0, 0.3659761)
-tracker = &"left_hand"
+tracker = &"/user/hand_tracker/left"
+show_when_tracked = true
 
 [node name="XRController3D2" type="XRController3D" parent="XR_Setup/XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.06351268, 0, 0.36646223)
-tracker = &"right_hand"
+tracker = &"/user/hand_tracker/right"
+show_when_tracked = true
 
 [node name="RayCast3D" type="RayCast3D" parent="XR_Setup/XROrigin3D/XRController3D2"]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.9468272, -0.0655303)
 collision_mask = 2
 collide_with_areas = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XR_Setup/XROrigin3D/XRController3D2/RayCast3D"]
+mesh = SubResource("SphereMesh_a202f")
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XR_Setup/XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 0.96445143, 0.26426023, 0, -0.26426023, 0.96445143, 0, 0.9468272, 3.160956)
@@ -80,3 +89,8 @@ surface_material_override/0 = SubResource("StandardMaterial3D_r3fl7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1527491, 0, 0)
 shape = SubResource("BoxShape3D_a202f")
 debug_color = Color(5.77569e-06, 0.58887106, 0.76170254, 0.41960785)
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
