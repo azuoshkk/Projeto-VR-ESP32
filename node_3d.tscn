@@ -1,10 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://cviylja22evhq"]
+[gd_scene load_steps=13 format=3 uid="uid://cviylja22evhq"]
 
 [ext_resource type="Script" uid="uid://bgs1gr3oq4b83" path="res://VR_Initializer.gd" id="1_a202f"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_a202f"]
-radius = 0.05
-height = 0.05
+[ext_resource type="PackedScene" uid="uid://c5s0p3nxnxgtj" path="res://xr_origin_3d.tscn" id="2_noarx"]
+[ext_resource type="PackedScene" uid="uid://diyu06cw06syv" path="res://addons/godot-xr-tools/player/player_body.tscn" id="3_a0tk4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a202f"]
 
@@ -23,36 +21,16 @@ albedo_color = Color(0, 0.6039216, 0.85490197, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3fl7"]
 albedo_color = Color(1, 0.15686275, 0, 1)
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_a0tk4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r3fl7"]
+size = Vector3(1.3349609, 0.001, 1.3227386)
+
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_a202f")
 
-[node name="XR_Setup" type="Node3D" parent="."]
-
-[node name="XROrigin3D" type="XROrigin3D" parent="XR_Setup"]
-
-[node name="XRController3D" type="XRController3D" parent="XR_Setup/XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.5, 0, 0.3659761)
-tracker = &"/user/hand_tracker/left"
-show_when_tracked = true
-
-[node name="XRController3D2" type="XRController3D" parent="XR_Setup/XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.06351268, 0, 0.36646223)
-tracker = &"/user/hand_tracker/right"
-show_when_tracked = true
-
-[node name="RayCast3D" type="RayCast3D" parent="XR_Setup/XROrigin3D/XRController3D2"]
-transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.9468272, -0.0655303)
-collision_mask = 2
-collide_with_areas = true
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="XR_Setup/XROrigin3D/XRController3D2/RayCast3D"]
-mesh = SubResource("SphereMesh_a202f")
-
-[node name="XRCamera3D" type="XRCamera3D" parent="XR_Setup/XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, 0.96445143, 0.26426023, 0, -0.26426023, 0.96445143, 0, 0.9468272, 3.160956)
-
 [node name="GreenBtn" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.098562, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.098562, 0.6195451, -1.67928)
 collision_layer = 2
 collision_mask = 2
 
@@ -65,6 +43,7 @@ mesh = SubResource("BoxMesh_a202f")
 surface_material_override/0 = SubResource("StandardMaterial3D_noarx")
 
 [node name="BlueBtn" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6195451, -1.67928)
 collision_layer = 2
 collision_mask = 2
 
@@ -77,6 +56,7 @@ mesh = SubResource("BoxMesh_jka67")
 surface_material_override/0 = SubResource("StandardMaterial3D_i5arm")
 
 [node name="RedBtn" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6195451, -1.67928)
 collision_layer = 2
 collision_mask = 2
 
@@ -92,5 +72,22 @@ debug_color = Color(5.77569e-06, 0.58887106, 0.76170254, 0.41960785)
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true
+
+[node name="XROrigin3D" parent="." instance=ExtResource("2_noarx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.66790855, 0)
+current = true
+
+[node name="PlayerBody" parent="XROrigin3D" instance=ExtResource("3_a0tk4")]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0)
+layers = 3
+mesh = SubResource("PlaneMesh_a0tk4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(15, 0, 0, 0, 15, 0, 0, 0, 15, 0.0073242188, -0.10625489, -0.063056946)
+shape = SubResource("BoxShape3D_r3fl7")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -8,3 +8,6 @@
 
 # Arquivos de configuração do Mono/C# (se aplicável)
 .mono/
+
+# Ignorar pasta de compilação do Android
+android/build/
