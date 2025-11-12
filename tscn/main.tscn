@@ -1,0 +1,39 @@
+[gd_scene load_steps=9 format=3 uid="uid://dilr0fuyvm5vh"]
+
+[ext_resource type="Script" uid="uid://b2kwi4ujnxdtj" path="res://scripts/node_3d.gd" id="1_ewaw7"]
+[ext_resource type="PackedScene" uid="uid://dkvousauwf8lv" path="res://tscn/XRBody.tscn" id="2_g6ans"]
+[ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="3_8kplt"]
+[ext_resource type="PackedScene" uid="uid://bsc88uad0q333" path="res://tscn/ButtonESPUI.tscn" id="4_ao1ln"]
+[ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="5_q8ief"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g6ans"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_8kplt"]
+sky_material = SubResource("ProceduralSkyMaterial_g6ans")
+
+[sub_resource type="Environment" id="Environment_ao1ln"]
+background_mode = 1
+background_color = Color(0, 0, 0, 0)
+sky = SubResource("Sky_8kplt")
+tonemap_mode = 2
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_ewaw7")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ao1ln")
+
+[node name="XROrigin3D" parent="." instance=ExtResource("2_g6ans")]
+
+[node name="Button" parent="." instance=ExtResource("3_8kplt")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1.75, -1)
+scene = ExtResource("4_ao1ln")
+scene_properties_keys = PackedStringArray("button_espui.gd")
+
+[node name="StartXR" parent="." instance=ExtResource("5_q8ief")]
+enable_passthrough = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)

@@ -1,13 +1,3 @@
-# Arquivos de importação do Godot
+# Godot 4+ specific ignores
 .godot/
-
-# Arquivos exportados
-*.pck
-*.export/
-*.export_presets
-
-# Arquivos de configuração do Mono/C# (se aplicável)
-.mono/
-
-# Ignorar pasta de compilação do Android
-android/build/
+/android/

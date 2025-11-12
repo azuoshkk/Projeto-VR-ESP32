@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkvousauwf8lv"]
+
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="1_0u1hs"]
+[ext_resource type="PackedScene" uid="uid://cqhw276realc" path="res://addons/godot-xr-tools/functions/function_pointer.tscn" id="2_kov3b"]
+[ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="3_10i5q"]
+
+[node name="XROrigin3D" type="XROrigin3D"]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="."]
+
+[node name="leftHand" type="XRController3D" parent="."]
+tracker = &"left_hand"
+
+[node name="LeftHand" parent="leftHand" instance=ExtResource("1_0u1hs")]
+
+[node name="FunctionPointer" parent="leftHand/LeftHand" instance=ExtResource("2_kov3b")]
+laser_length = 1
+
+[node name="rightHand" type="XRController3D" parent="."]
+tracker = &"right_hand"
+
+[node name="RightHand" parent="rightHand" instance=ExtResource("3_10i5q")]
+
+[node name="FunctionPointer" parent="rightHand" instance=ExtResource("2_kov3b")]
+laser_length = 1

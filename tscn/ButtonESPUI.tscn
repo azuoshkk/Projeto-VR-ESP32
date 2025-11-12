@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3 uid="uid://bsc88uad0q333"]
+
+[ext_resource type="Script" uid="uid://deyts1xwnlksp" path="res://scripts/button_espui.gd" id="1_qwfw6"]
+
+[node name="ColorRect" type="ColorRect"]
+offset_right = 300.0
+offset_bottom = 200.0
+color = Color(1, 0, 1, 1)
+script = ExtResource("1_qwfw6")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="Button_Blue" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -45.5
+offset_right = 137.0
+offset_bottom = 45.5
+grow_vertical = 2
+theme_override_font_sizes/font_size = 60
+text = "Blue"
+
+[node name="Button_Red" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -118.0
+offset_top = -45.5
+offset_bottom = 45.5
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_font_sizes/font_size = 60
+text = "Red"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -42.5
+offset_top = -23.0
+offset_right = 42.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "Delay: - ms"
+
+[connection signal="pressed" from="Button_Blue" to="." method="_on_button_blue_pressed"]
+[connection signal="pressed" from="Button_Red" to="." method="_on_button_red_pressed"]
