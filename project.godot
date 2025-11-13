@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="VR+ESP32"
+run/main_scene="uid://dilr0fuyvm5vh"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 

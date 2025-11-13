@@ -1,59 +1,35 @@
 extends ColorRect
 
-var request_start_time_msec = 0
-
 var estado_azul = false
 var estado_vermelho = false
 
+var udp_peer: PacketPeerUDP
+# MUDEI AQUI: Voltamos ao IP padrão do Modo AP
+var esp_ip = "192.168.4.1" 
+var esp_port_botoes = 4211
+
 func _ready():
-	# Conecta os sinais aos botões pelos seus nomes exatos
 	$Button_Blue.pressed.connect(_on_button_blue_pressed)
 	$Button_Red.pressed.connect(_on_button_red_pressed)
-	$HTTPRequest.request_completed.connect(_on_request_completed)
+	
+	udp_peer = PacketPeerUDP.new()
+	udp_peer.set_dest_address(esp_ip, esp_port_botoes)
+	print("UDP (Botões) pronto. Mirando no IP: ", esp_ip, " Porta: ", esp_port_botoes)
 
 func _on_button_blue_pressed():
-	# Inverte o estado azul e chama a função de envio
 	estado_azul = !estado_azul
 	send_request("azul", estado_azul)
 
 func _on_button_red_pressed():
-	# Inverte o estado vermelho e chama a função de envio
 	estado_vermelho = !estado_vermelho
 	send_request("vermelho", estado_vermelho)
 
 func send_request(led_color, new_state):
-	# Cria o JSON: {"led": "azul", "estado": true}
 	var body_data = {"led": led_color, "estado": new_state}
 	var body_json = JSON.stringify(body_data)
 	
-	var url = "http://192.168.4.1/toggle"
-	var headers = [ "Content-Type: application/json" ]
-
-	# Marca o tempo de início
-	request_start_time_msec = Time.get_ticks_msec()
+	var bytes = body_json.to_utf8_buffer()
+	udp_peer.put_packet(bytes)
 	
-	# Atualiza o label
-	$Label.text = "Enviando..."
-	
-	# Envia a requisição
-	$HTTPRequest.request(url, headers, HTTPClient.METHOD_POST, body_json)
-	
-	print("Enviando para o ESP: ", body_json)
-
-func _on_request_completed(result, response_code, headers, body):
-	# Calcula o tempo final
-	var response_time_msec = Time.get_ticks_msec()
-	
-	var delay = response_time_msec - request_start_time_msec
-	
-	# Mostra o resultado no label
-	if result != HTTPRequest.RESULT_SUCCESS:
-		$Label.text = "Falha na conexão!"
-		return
-
-	if response_code == 200:
-		$Label.text = "Delay: " + str(delay) + " ms"
-		print("Sucesso! Latência: ", delay, " ms")
-	else:
-		$Label.text = "Erro no ESP! (" + str(response_code) + ")"
-		print("Erro! O ESP32 respondeu com código: ", response_code)
+	$Label.text = "Comando '" + led_color + "' enviado!"
+	print("Pacote UDP (Botão) enviado: ", body_json)
