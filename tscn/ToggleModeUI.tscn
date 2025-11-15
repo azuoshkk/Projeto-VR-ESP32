@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bgf3uapv7iihc"]
 
-[ext_resource type="Script" uid="uid://bi7qp4dmw8vf6" path="res://scripts/ToggleMode.gd" id="1_kwrko"]
+[ext_resource type="Script" uid="uid://bi7qp4dmw8vf6" path="res://scripts/toggle_mode.gd" id="1_kwrko"]
 
 [node name="ColorRect" type="ColorRect"]
 offset_right = 300.0

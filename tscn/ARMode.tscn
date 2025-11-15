@@ -35,8 +35,11 @@ enable_passthrough = true
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
 
-[node name="GerenciadorLeds" type="Node3D" parent="."]
+[node name="GerenciadorLeds" type="Node3D" parent="." node_paths=PackedStringArray("arm_extractor", "controller_esq", "controller_dir")]
 script = ExtResource("4_kflln")
+arm_extractor = NodePath("../XROrigin3D/Ch32_nonPBR/Skeleton3D")
+controller_esq = NodePath("../XROrigin3D/leftHand")
+controller_dir = NodePath("../XROrigin3D/rightHand")
 
 [node name="PickableObject" parent="." instance=ExtResource("5_bakew")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, -1)
@@ -46,9 +49,10 @@ second_hand_grab = 1
 [node name="Mode Toggle" parent="PickableObject" instance=ExtResource("6_wbamj")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 scene = ExtResource("7_vrjsi")
-scene_properties_keys = PackedStringArray("ToggleMode.gd")
+scene_properties_keys = PackedStringArray("toggle_mode.gd")
 
 [connection signal="button_pressed" from="XROrigin3D/leftHand" to="GerenciadorLeds" method="_on_left_hand_button_pressed"]
 [connection signal="button_pressed" from="XROrigin3D/rightHand" to="GerenciadorLeds" method="_on_right_hand_button_pressed"]
 
 [editable path="XROrigin3D"]
+[editable path="XROrigin3D/Ch32_nonPBR"]
