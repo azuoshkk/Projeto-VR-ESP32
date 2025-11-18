@@ -27,17 +27,14 @@ script = ExtResource("1_67xi4")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_ao1ln")
 
-[node name="XROrigin3D" parent="." instance=ExtResource("2_cf4iu")]
-
 [node name="StartXR" parent="." instance=ExtResource("3_u62x2")]
 enable_passthrough = true
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
 
-[node name="GerenciadorLeds" type="Node3D" parent="." node_paths=PackedStringArray("arm_extractor", "controller_esq", "controller_dir")]
+[node name="GerenciadorLeds" type="Node3D" parent="." node_paths=PackedStringArray("controller_esq", "controller_dir")]
 script = ExtResource("4_kflln")
-arm_extractor = NodePath("../XROrigin3D/Ch32_nonPBR/Skeleton3D")
 controller_esq = NodePath("../XROrigin3D/leftHand")
 controller_dir = NodePath("../XROrigin3D/rightHand")
 
@@ -47,12 +44,10 @@ release_mode = 1
 second_hand_grab = 1
 
 [node name="Mode Toggle" parent="PickableObject" instance=ExtResource("6_wbamj")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+transform = Transform3D(0.5, 0, 0, 0, 0.49986264, -0.011718813, 0, 0.011718813, 0.49986264, 0, 0, 0)
 scene = ExtResource("7_vrjsi")
 scene_properties_keys = PackedStringArray("toggle_mode.gd")
 
-[connection signal="button_pressed" from="XROrigin3D/leftHand" to="GerenciadorLeds" method="_on_left_hand_button_pressed"]
-[connection signal="button_pressed" from="XROrigin3D/rightHand" to="GerenciadorLeds" method="_on_right_hand_button_pressed"]
+[node name="XROrigin3D" parent="." instance=ExtResource("2_cf4iu")]
 
 [editable path="XROrigin3D"]
-[editable path="XROrigin3D/Ch32_nonPBR"]

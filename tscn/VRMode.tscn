@@ -15,11 +15,9 @@ size = Vector2(3, 2)
 
 [node name="StartXR" parent="." instance=ExtResource("1_hwpmf")]
 
-[node name="XROrigin3D" parent="." instance=ExtResource("2_l43gm")]
+[node name="XROrigin3D_rightHand#FunctionPickup" parent="." instance=ExtResource("3_h2een")]
 
-[node name="FunctionPickup" parent="XROrigin3D/leftHand" index="1" instance=ExtResource("3_h2een")]
-
-[node name="FunctionPickup" parent="XROrigin3D/rightHand" index="1" instance=ExtResource("3_h2een")]
+[node name="XROrigin3D_leftHand#FunctionPickup" parent="." instance=ExtResource("3_h2een")]
 
 [node name="PickableObject" parent="." instance=ExtResource("4_3gm8o")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.78, -3)
@@ -30,14 +28,18 @@ second_hand_grab = 1
 [node name="Viewport2Din3D" parent="PickableObject" instance=ExtResource("5_grq2q")]
 transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
 scene = ExtResource("6_8v8av")
-scene_properties_keys = PackedStringArray("ToggleMode.gd")
+scene_properties_keys = PackedStringArray("toggle_mode.gd")
 
-[node name="GerenciadorLeds" type="Node3D" parent="."]
+[node name="GerenciadorLeds" type="Node3D" parent="." node_paths=PackedStringArray("controller_esq", "controller_dir")]
 script = ExtResource("7_bsu78")
+controller_esq = NodePath("../XROrigin3D/leftHand")
+controller_dir = NodePath("../XROrigin3D/rightHand")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1.78, 3)
 mesh = SubResource("PlaneMesh_6ae22")
 skeleton = NodePath("../XROrigin3D/XRCamera3D")
+
+[node name="XROrigin3D" parent="." instance=ExtResource("2_l43gm")]
 
 [editable path="XROrigin3D"]
