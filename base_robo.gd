@@ -1,76 +1,80 @@
 extends Node3D
 
-# ALVOS
-@export var target_node: Node3D # Arraste seu Controller/Mão aqui
+# --- ENTRADAS ---
+@export var target_hand: Node3D
+@export var user_shoulder: Node3D
 
-# PEÇAS DO ROBÔ (Arraste os nós da estrutura que criamos)
+# --- PEÇAS DO ROBÔ ---
+@export var base_giro: Node3D
 @export var ombro_eixo: Node3D
 @export var cotovelo_eixo: Node3D
 
-# MEDIDAS DO SEU ROBÔ (Em metros, ajuste para ficar igual ao real)
-@export var comprimento_braco: float = 0.3
-@export var comprimento_antebraco: float = 0.3
+# --- MEDIDAS ---
+@export var tamanho_braco: float = 0.3
+@export var tamanho_antebraco: float = 0.3
 
-# VARIÁVEIS PARA O ESP32
-var angulo_base: float
-var angulo_ombro: float
-var angulo_cotovelo: float
+# --- CALIBRAÇÃO ---
+@export_range(-180, 180) var offset_cotovelo_graus: float = -180.0 
+
+# --- SAÍDA PARA ESP32 ---
+var angulo_base_graus: float
+var angulo_ombro_graus: float
+var angulo_cotovelo_graus: float
 
 func _process(delta):
-	if !target_node: return
+	if !target_hand or !user_shoulder: return
 	
-	# 1. ONDE ESTÁ O ALVO RELATIVO AO OMBRO?
-	# Converte a posição global do alvo para o espaço local da base
-	var local_target = to_local(target_node.global_position)
-	var x = local_target.x
-	var y = local_target.y
-	var z = local_target.z
+	# 1. CÁLCULO DO VETOR
+	var vetor_movimento = target_hand.global_position - user_shoulder.global_position
+	var vetor_local = to_local(global_position + vetor_movimento)
 	
-	# 2. GIRA A BASE (Azimute / Servo 1)
-	# A base apenas aponta para o alvo na horizontal
-	angulo_base = atan2(x, z)
-	ombro_eixo.rotation.y = angulo_base
+	# 2. DISTÂNCIA
+	var dist_total = vetor_local.length()
 	
-	# 3. CALCULA O TRIÂNGULO (Elevação e Cotovelo)
-	# Distância horizontal até o alvo
-	var dist_horizontal = Vector2(x, z).length()
-	# Distância direta do ombro ao alvo
-	var dist_total = local_target.length()
+	# Debug (Opcional)
+	# print("Distância Ombro-Mão: ", snapped(dist_total, 0.01), "m")
 	
-	# Limita a distância para o braço não "estourar" se o alvo estiver longe
-	dist_total = clamp(dist_total, 0.01, comprimento_braco + comprimento_antebraco - 0.01)
+	# Limita o alcance para não estourar a matemática
+	dist_total = clamp(dist_total, 0.01, tamanho_braco + tamanho_antebraco - 0.01)
 	
-	# LEI DOS COSSENOS (A matemática que substitui o SkeletonIK)
-	var a = comprimento_braco
-	var b = comprimento_antebraco
+	# 3. MATEMÁTICA DO TRIÂNGULO (Lei dos Cossenos)
+	var a = tamanho_braco
+	var b = tamanho_antebraco
 	var c = dist_total
 	
-	# Ângulo do Cotovelo (Beta)
-	var cos_angle_cotovelo = (a*a + b*b - c*c) / (2 * a * b)
-	# Proteção matemática
-	cos_angle_cotovelo = clamp(cos_angle_cotovelo, -1.0, 1.0)
-	var angle_cotovelo_rad = acos(cos_angle_cotovelo)
+	var cos_cotovelo = (a*a + b*b - c*c) / (2 * a * b)
+	var ang_cotovelo_rad = acos(clamp(cos_cotovelo, -1.0, 1.0))
 	
-	# Ângulo do Ombro (Alpha - parte interna)
-	var cos_angle_ombro_tri = (a*a + c*c - b*b) / (2 * a * c)
-	cos_angle_ombro_tri = clamp(cos_angle_ombro_tri, -1.0, 1.0)
-	var angle_ombro_tri = acos(cos_angle_ombro_tri)
+	# Cálculos do Ombro
+	var x = vetor_local.x
+	var y = vetor_local.y
+	var z = vetor_local.z
 	
-	# Elevação total necessária para olhar para o alvo
-	var angle_elevacao_alvo = atan2(y, dist_horizontal)
+	var angulo_y = atan2(x, z) # Base
+	var dist_horizontal = Vector2(x, z).length()
+	var ang_elevacao = atan2(y, dist_horizontal)
 	
-	# Aplica rotações (Ajuste os sinais + ou - dependendo de como montou os eixos)
-	angulo_ombro = angle_elevacao_alvo + angle_ombro_tri
-	angulo_cotovelo = angle_cotovelo_rad - PI # Ajuste para dobrar para o lado certo
+	var cos_ombro_tri = (a*a + c*c - b*b) / (2 * a * c)
+	var ang_ombro_interno = acos(clamp(cos_ombro_tri, -1.0, 1.0))
 	
-	# Aplica visualmente
-	ombro_eixo.rotation.x = -angulo_ombro # O negativo inverte se precisar
-	cotovelo_eixo.rotation.x = angulo_cotovelo
+	var resultado_ombro = ang_elevacao + ang_ombro_interno
 	
-	# 4. CONVERTE PARA GRAUS (Para enviar pro ESP32)
-	var grau_base = rad_to_deg(angulo_base)
-	var grau_ombro = rad_to_deg(angulo_ombro)
-	var grau_cotovelo = rad_to_deg(angulo_cotovelo)
+	# --- 4. CÁLCULO FINAL DO COTOVELO COM TRAVA ---
+	var offset_rad = deg_to_rad(offset_cotovelo_graus)
+	var cotovelo_final = ang_cotovelo_rad + offset_rad
 	
-	# Debug
-	# print("Base: ", int(grau_base), " Ombro: ", int(grau_ombro), " Cotovelo: ", int(grau_cotovelo))
+	# !!! AQUI ESTÁ A CORREÇÃO !!!
+	# Impede que o ângulo seja menor que 0 (dobrar para trás).
+	# Se o braço ficar TRAVADO RETO e não dobrar, troque 'max' por 'min'.
+	cotovelo_final = min(cotovelo_final, 0.0)
+	
+	# 5. APLICAÇÃO NOS NÓS
+	base_giro.rotation.y = angulo_y
+	ombro_eixo.rotation.x = -resultado_ombro 
+	cotovelo_eixo.rotation.x = cotovelo_final 
+	
+	# 6. ATUALIZA VARIÁVEIS PARA O ESP32
+	# (Usamos cotovelo_final aqui para o robô físico também respeitar a trava)
+	angulo_base_graus = rad_to_deg(angulo_y)
+	angulo_ombro_graus = rad_to_deg(resultado_ombro)
+	angulo_cotovelo_graus = rad_to_deg(cotovelo_final)

@@ -1,12 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://dkvousauwf8lv"]
+[gd_scene load_steps=5 format=3 uid="uid://dkvousauwf8lv"]
 
 [ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="1_5j28k"]
 [ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="2_0u1hs"]
 [ext_resource type="PackedScene" uid="uid://cqhw276realc" path="res://addons/godot-xr-tools/functions/function_pointer.tscn" id="2_kov3b"]
+[ext_resource type="PackedScene" uid="uid://da5mvllcrxwff" path="res://tscn/BaseRobo.tscn" id="4_kov3b"]
 
 [node name="XROrigin3D" type="XROrigin3D"]
 
 [node name="XRCamera3D" type="XRCamera3D" parent="."]
+
+[node name="OmbroVirtual" type="Marker3D" parent="XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, -0.12, 0.05)
 
 [node name="leftHand" type="XRController3D" parent="."]
 tracker = &"left_hand"
@@ -23,3 +27,14 @@ tracker = &"right_hand"
 
 [node name="FunctionPointer" parent="rightHand" instance=ExtResource("2_kov3b")]
 laser_length = 1
+
+[node name="BaseRobo" parent="." node_paths=PackedStringArray("target_hand", "user_shoulder", "base_giro", "ombro_eixo", "cotovelo_eixo") instance=ExtResource("4_kov3b")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+target_hand = NodePath("../leftHand")
+user_shoulder = NodePath("../XRCamera3D/OmbroVirtual")
+base_giro = NodePath("BaseGiro")
+ombro_eixo = NodePath("BaseGiro/OmbroEixo")
+cotovelo_eixo = NodePath("BaseGiro/OmbroEixo/CotoveloEixo")
+tamanho_braco = 0.5
+
+[editable path="BaseRobo"]

@@ -50,4 +50,12 @@ scene_properties_keys = PackedStringArray("toggle_mode.gd")
 
 [node name="XROrigin3D" parent="." instance=ExtResource("2_cf4iu")]
 
+[node name="BaseRobo" parent="XROrigin3D" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+offset_cotovelo_graus = -90.0
+
+[node name="BaseGiro" parent="XROrigin3D/BaseRobo" index="0"]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+
 [editable path="XROrigin3D"]
+[editable path="XROrigin3D/BaseRobo"]
