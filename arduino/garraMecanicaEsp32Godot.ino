@@ -1,86 +1,71 @@
-#include <ESP32Servo.h>
-// --- Definição dos Pinos (Conecte os fios laranjas aqui) ---
-int pinoServoBase = 16;
-int pinoServoOmbro = 17;
-int pinoServoCotovelo = 14;
-int pinoServoGarra = 15;
+#include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
-// --- Criação dos Objetos Servo ---
-Servo servoBase;
-Servo servoOmbro;
-Servo servoCotovelo;
-Servo servoGarra;
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-// Intervalos min/max em microssegundos (padrão do SG90 é geralmente 500-2400)
-int minPulse = 500;  // Posição 0 graus
-int maxPulse = 2400; // Posição 180 graus
+// --- CONFIGURAÇÃO ---
+#define PULSO_MIN  150  // 0 Graus (Ajuste se bater no fim)
+#define PULSO_MAX  480  // 180 Graus
+
+// Mapa das Portas
+int pinoBase = 0;
+int pinoOmbro = 1;
+int pinoCotovelo = 2;
+int pinoPulso = 3;
 
 void setup() {
-  // Inicia a comunicação Serial para o "Controle Remoto"
   Serial.begin(115200);
-  Serial.println("--- Controle de Braço Robótico (4-DOF) ---");
+  pwm.begin();
+  pwm.setPWMFreq(50);
+  
+  Serial.println("--- SISTEMA TUSK PRONTO ---");
+  Serial.println("Comandos disponiveis:");
+  Serial.println("base 90");
+  Serial.println("ombro 45");
+  Serial.println("cotovelo 120");
+  Serial.println("pulso 180");
+}
 
-  // "Anexa" cada servo ao seu pino com as configurações de pulso
-  servoBase.attach(pinoServoBase, minPulse, maxPulse);
-  servoOmbro.attach(pinoServoOmbro, minPulse, maxPulse);        
-  servoCotovelo.attach(pinoServoCotovelo, minPulse, maxPulse);  
-  servoGarra.attach(pinoServoGarra, minPulse, maxPulse);        
+void mover(int pino, int angulo) {
+  // Proteção de Limites
+  if (angulo < 0) angulo = 0;
+  if (angulo > 180) angulo = 180;
 
-  // --- Posição Inicial (Home) ---
-  Serial.println("Definindo posição inicial...");
-  servoBase.write(90);      // Centralizado
-  servoOmbro.write(90);     // Em pé
-  servoCotovelo.write(90);  // Em L
-  servoGarra.write(0);      // Aberta ou fechada (depende da sua montagem)
-
-  Serial.println("Sistema pronto!");
-  Serial.println("Envie comandos no formato: NOME ANGULO");
-  Serial.println("Exemplos: 'base 90', 'ombro 45', 'garra 180'");
+  int pulso = map(angulo, 0, 180, PULSO_MIN, PULSO_MAX);
+  pwm.setPWM(pino, 0, pulso);
+  
+  Serial.print("Movendo motor ");
+  Serial.print(pino);
+  Serial.print(" para ");
+  Serial.println(angulo);
 }
 
 void loop() {
-  // Verifica se há dados chegando pela Serial
   if (Serial.available() > 0) {
-    
-    // Lê o nome do servo até encontrar um espaço (ex: lê "base" de "base 90")
-    String nomeServo = Serial.readStringUntil(' ');
-    nomeServo.trim(); // Remove espaços extras ou quebras de linha
+    // Lê o nome do motor
+    String comando = Serial.readStringUntil(' ');
+    // Lê o ângulo
+    int grau = Serial.parseInt();
 
-    // Verifica se ainda tem dados (o número do ângulo)
-    if (Serial.available() > 0) {
-      
-      // Lê o número inteiro que vem depois (o ângulo)
-      int angulo = Serial.parseInt();
+    // Limpa o buffer
+    while(Serial.available()) Serial.read();
 
-      // Verifica qual servo deve mover e aplica o ângulo
-      if (nomeServo == "base") {
-        servoBase.write(angulo);
-        Serial.print(">> Base movida para: ");
-        Serial.println(angulo);
-        
-      } else if (nomeServo == "ombro") {
-        servoOmbro.write(angulo);
-        Serial.print(">> Ombro movido para: ");
-        Serial.println(angulo);
-        
-      } else if (nomeServo == "cotovelo") {
-        servoCotovelo.write(angulo);
-        Serial.print(">> Cotovelo movido para: ");
-        Serial.println(angulo);
-        
-      } else if (nomeServo == "garra") {
-        servoGarra.write(angulo);
-        Serial.print(">> Garra movida para: ");
-        Serial.println(angulo);
-        
-      } else {
-        Serial.println("Erro: Nome do servo incorreto. Use: base, ombro, cotovelo ou garra.");
-      }
+    // Executa
+    if (comando.equalsIgnoreCase("base")) {
+      mover(pinoBase, grau);
     }
-    
-    // Limpa qualquer "lixo" que tenha sobrado no buffer serial (como novas linhas)
-    while (Serial.available() > 0) {
-      Serial.read();
+    else if (comando.equalsIgnoreCase("ombro")) {
+      mover(pinoOmbro, grau);
+    }
+    else if (comando.equalsIgnoreCase("cotovelo")) {
+      mover(pinoCotovelo, grau);
+    }
+    else if (comando.equalsIgnoreCase("pulso") || comando.equalsIgnoreCase("garra")) {
+      mover(pinoPulso, grau);
+    }
+    else {
+      Serial.println("Comando nao reconhecido. Tente: base, ombro, cotovelo, pulso");
     }
   }
 }

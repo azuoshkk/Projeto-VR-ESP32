@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dilr0fuyvm5vh"]
+[gd_scene load_steps=12 format=3 uid="uid://dilr0fuyvm5vh"]
 
 [ext_resource type="Script" uid="uid://b2kwi4ujnxdtj" path="res://scripts/node_3d.gd" id="1_67xi4"]
 [ext_resource type="PackedScene" uid="uid://dkvousauwf8lv" path="res://tscn/XRBody.tscn" id="2_cf4iu"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c8l60rnugru40" path="res://addons/godot-xr-tools/objects/pickable.tscn" id="5_bakew"]
 [ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="6_wbamj"]
 [ext_resource type="PackedScene" uid="uid://bgf3uapv7iihc" path="res://tscn/ToggleModeUI.tscn" id="7_vrjsi"]
+[ext_resource type="Script" uid="uid://bb72vxbv306qe" path="res://scripts/enviar_dados.gd" id="8_cf4iu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g6ans"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -56,6 +57,12 @@ offset_cotovelo_graus = -90.0
 
 [node name="BaseGiro" parent="XROrigin3D/BaseRobo" index="0"]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
+
+[node name="EnviarDados" type="Node3D" parent="." node_paths=PackedStringArray("joint_base", "joint_ombro", "joint_cotovelo")]
+script = ExtResource("8_cf4iu")
+joint_base = NodePath("../XROrigin3D/BaseRobo/BaseGiro")
+joint_ombro = NodePath("../XROrigin3D/BaseRobo/BaseGiro/OmbroEixo")
+joint_cotovelo = NodePath("../XROrigin3D/BaseRobo/BaseGiro/OmbroEixo/CotoveloEixo")
 
 [editable path="XROrigin3D"]
 [editable path="XROrigin3D/BaseRobo"]
